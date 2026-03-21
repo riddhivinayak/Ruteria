@@ -48,7 +48,7 @@ export function AppSidebar({ rol }: AppSidebarProps) {
                   href={item.href}
                   className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-[#6366f1] text-white'
                       : 'text-slate-400 hover:bg-slate-700 hover:text-slate-100'
                   }`}
                 >
