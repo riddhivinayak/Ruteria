@@ -1,5 +1,6 @@
 'use client'
 
+import type { ElementType } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -11,10 +12,11 @@ import {
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { logoutAction } from '@/app/actions/auth'
+import type { UserRol } from '@/lib/validations/usuarios'
 
 interface NavItem {
   href: string
-  icon: React.ElementType
+  icon: ElementType
   label: string
   adminOnly?: boolean
 }
@@ -27,7 +29,7 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 interface AppSidebarProps {
-  rol: string
+  rol: UserRol
 }
 
 export function AppSidebar({ rol }: AppSidebarProps) {
@@ -46,6 +48,7 @@ export function AppSidebar({ rol }: AppSidebarProps) {
               <TooltipTrigger asChild>
                 <Link
                   href={item.href}
+                  aria-label={item.label}
                   className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors ${
                     isActive
                       ? 'bg-[#6366f1] text-white'
@@ -70,6 +73,7 @@ export function AppSidebar({ rol }: AppSidebarProps) {
             <form action={logoutAction}>
               <button
                 type="submit"
+                aria-label="Cerrar sesión"
                 className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:bg-slate-700 hover:text-slate-100 transition-colors"
               >
                 <LogOut size={18} />

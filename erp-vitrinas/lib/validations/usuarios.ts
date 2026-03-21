@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 const ROLES = ['admin', 'colaboradora', 'supervisor', 'analista', 'compras'] as const
 
+export type UserRol = (typeof ROLES)[number]
+
 export const usuarioCreateSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(200),
   email: z.string().email('Email inválido'),
