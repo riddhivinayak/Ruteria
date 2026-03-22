@@ -29,8 +29,13 @@ export function useCreateVitrina() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (values: VitrinaFormValues) => {
-      const { error } = await supabase.from('vitrinas').insert(values)
+      const { data, error } = await supabase
+        .from('vitrinas')
+        .insert(values)
+        .select('id')
+        .single()
       if (error) throw new Error(error.message)
+      return data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   })

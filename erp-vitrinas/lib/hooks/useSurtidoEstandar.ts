@@ -8,6 +8,7 @@ type SurtidoItem = Database['public']['Tables']['surtido_estandar']['Row'] & {
 
 export function useSurtidoEstandar(vitrinaId: string) {
   const supabase = createClient()
+  const queryClient = useQueryClient()
   const queryKey = ['surtido_estandar', vitrinaId] as const
 
   const query = useQuery({
@@ -23,8 +24,6 @@ export function useSurtidoEstandar(vitrinaId: string) {
     },
     enabled: !!vitrinaId,
   })
-
-  const queryClient = useQueryClient()
 
   const addItem = useMutation({
     mutationFn: async ({ producto_id, cantidad_objetivo }: { producto_id: string; cantidad_objetivo: number }) => {

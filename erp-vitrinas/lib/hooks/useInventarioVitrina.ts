@@ -16,6 +16,8 @@ export function useInventarioVitrina(vitrinaId: string) {
   return useQuery({
     queryKey: ['inventario_vitrina', vitrinaId] as const,
     queryFn: async () => {
+      // Dos queries independientes: posible inconsistencia si hay movimiento entre ambas.
+      // Aceptable para Sprint 2; en fases futuras considerar vista SQL o RPC.
       const { data: surtido, error: eSurtido } = await supabase
         .from('surtido_estandar')
         .select('producto_id, cantidad_objetivo, productos(nombre, codigo)')
