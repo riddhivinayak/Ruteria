@@ -20,10 +20,13 @@ const SELECT = `
   fecha_hora_fin,
   monto_calculado,
   motivo_no_realizada,
+  pdv_id,
   puntos_de_venta(nombre_comercial, direccion),
-  rutas(nombre),
-  rutas_pdv!inner(orden_visita)
+  rutas!inner(nombre, rutas_pdv(orden_visita, pdv_id))
 ` as const
+
+type RutasPdvEntry = { orden_visita: number; pdv_id: string }
+type RutasEntry = { nombre: string; rutas_pdv: RutasPdvEntry[] | null }
 
 type RawVisita = {
   id: string
@@ -32,9 +35,15 @@ type RawVisita = {
   fecha_hora_fin: string | null
   monto_calculado: number
   motivo_no_realizada: string | null
+  pdv_id: string
   puntos_de_venta: { nombre_comercial: string; direccion: string | null } | { nombre_comercial: string; direccion: string | null }[] | null
-  rutas: { nombre: string } | { nombre: string }[] | null
-  rutas_pdv: { orden_visita: number } | { orden_visita: number }[] | null
+  rutas: RutasEntry | RutasEntry[] | null
+}
+
+// PostgREST may return a single object or an array for joined relations
+function firstOrNull<T>(value: T | T[] | null): T | null {
+  if (value === null || value === undefined) return null
+  return Array.isArray(value) ? (value[0] ?? null) : value
 }
 
 function mapRow(v: RawVisita): VisitaDelDia {
@@ -43,13 +52,8 @@ function mapRow(v: RawVisita): VisitaDelDia {
     ? (pdvRaw[0] ?? { nombre_comercial: '', direccion: null })
     : (pdvRaw ?? { nombre_comercial: '', direccion: null })
 
-  const rutaRaw = v.rutas
-  const ruta: VisitaDelDia['ruta'] = Array.isArray(rutaRaw)
-    ? (rutaRaw[0] ?? { nombre: '' })
-    : (rutaRaw ?? { nombre: '' })
-
-  const rutaPdvRaw = v.rutas_pdv
-  const rutaPdv = Array.isArray(rutaPdvRaw) ? rutaPdvRaw[0] : rutaPdvRaw
+  const rutasData = firstOrNull<RutasEntry>(v.rutas as RutasEntry | RutasEntry[] | null)
+  const ordenVisita = rutasData?.rutas_pdv?.find((rp) => rp.pdv_id === v.pdv_id)?.orden_visita ?? 0
 
   return {
     id: v.id,
@@ -59,8 +63,8 @@ function mapRow(v: RawVisita): VisitaDelDia {
     monto_calculado: v.monto_calculado ?? 0,
     motivo_no_realizada: v.motivo_no_realizada ?? null,
     pdv,
-    ruta,
-    orden_visita: rutaPdv?.orden_visita ?? 0,
+    ruta: { nombre: rutasData?.nombre ?? '' },
+    orden_visita: ordenVisita,
   }
 }
 

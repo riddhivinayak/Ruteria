@@ -39,6 +39,7 @@ interface RutaSheetProps {
     frecuencia: 'diaria' | 'semanal' | 'quincenal'
     dias_visita: string[]
     estado: 'activa' | 'inactiva'
+    nota_reasignacion?: string | null
     rutas_pdv?: Array<{ pdv_id: string; orden_visita: number }>
   }
 }
@@ -97,6 +98,7 @@ export function RutaSheet({ open, onOpenChange, ruta }: RutaSheetProps) {
         frecuencia: ruta.frecuencia,
         dias_visita: ruta.dias_visita,
         estado: ruta.estado,
+        nota_reasignacion: ruta.nota_reasignacion ?? '',
       })
 
       // Reconstruir lista de PDVs con nombres
