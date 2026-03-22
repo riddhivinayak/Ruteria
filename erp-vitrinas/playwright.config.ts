@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
+import { config } from 'dotenv'
+import path from 'path'
+
+// Cargar .env.local para que los tests tengan acceso a las variables de entorno
+config({ path: path.resolve(__dirname, '.env.local') })
 
 export default defineConfig({
   testDir: './tests',
