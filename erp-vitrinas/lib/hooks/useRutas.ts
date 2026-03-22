@@ -8,7 +8,7 @@ type RutaRow = Database['public']['Tables']['rutas']['Row']
 type Ruta = RutaRow & {
   usuarios: { nombre: string } | null
   zonas: { nombre: string } | null
-  rutas_pdv: { pdv_id: string }[]
+  rutas_pdv: { pdv_id: string; orden_visita: number }[]
   num_pdvs: number
 }
 
@@ -21,7 +21,7 @@ export function useRutas() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('rutas')
-        .select('*, usuarios!rutas_colaboradora_id_fkey(nombre), zonas(nombre), rutas_pdv(pdv_id)')
+        .select('*, usuarios!rutas_colaboradora_id_fkey(nombre), zonas(nombre), rutas_pdv(pdv_id, orden_visita)')
         .order('codigo')
       if (error) throw new Error(error.message)
       return (data ?? []).map((r) => ({
