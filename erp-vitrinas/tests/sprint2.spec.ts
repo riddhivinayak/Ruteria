@@ -4,8 +4,8 @@ test.describe('Sprint 2', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/login')
-    await page.fill('input[name="email"]', 'admin@erp.local')
-    await page.fill('input[name="password"]', 'Admin1234!')
+    await page.getByLabel(/correo/i).fill('admin@erp.local')
+    await page.getByLabel(/contraseña/i).fill('Admin1234!')
     await page.click('button[type="submit"]')
     await page.waitForURL('/admin/dashboard')
   })
