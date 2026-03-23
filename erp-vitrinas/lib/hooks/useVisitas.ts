@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { getBusinessDate, getBusinessDayUtcRange } from '@/lib/dates'
 
 export type FiltrosVisitas = {
   fechaDesde?: string   // 'YYYY-MM-DD'
@@ -14,6 +15,9 @@ export type VisitaAdmin = {
   estado: string
   fecha_hora_inicio: string | null
   monto_calculado: number
+  monto_cobrado: number | null
+  estado_cobro: string | null
+  forma_pago: string | null
   pdvNombre: string
   vitrinaCodigo: string
   rutaNombre: string
@@ -30,13 +34,15 @@ function firstOrNull<T>(val: MaybeArray<T>): T | null {
 
 export function useVisitas(filtros: FiltrosVisitas = {}) {
   const supabase = createClient()
-  const hoy = new Date().toISOString().split('T')[0]
+  const hoy = getBusinessDate()
 
   return useQuery({
     queryKey: ['visitas', filtros],
     queryFn: async (): Promise<VisitaAdmin[]> => {
       const desde = filtros.fechaDesde ?? hoy
       const hasta = filtros.fechaHasta ?? hoy
+      const { start } = getBusinessDayUtcRange(desde)
+      const { end } = getBusinessDayUtcRange(hasta)
 
       let q = supabase
         .from('visitas')
@@ -45,10 +51,11 @@ export function useVisitas(filtros: FiltrosVisitas = {}) {
           puntos_de_venta(nombre_comercial),
           vitrinas(codigo),
           rutas(nombre),
-          usuarios!visitas_colaboradora_id_fkey(nombre)
+          usuarios!visitas_colaboradora_id_fkey(nombre),
+          cobros(monto, estado, formas_pago(nombre))
         `)
-        .gte('created_at', `${desde}T00:00:00.000Z`)
-        .lte('created_at', `${hasta}T23:59:59.999Z`)
+        .gte('created_at', start)
+        .lt('created_at', end)
         .order('created_at', { ascending: false })
         .limit(50)
 
@@ -66,11 +73,21 @@ export function useVisitas(filtros: FiltrosVisitas = {}) {
         const vitrina = v.vitrinas as MaybeArray<{ codigo: string }>
         const ruta = v.rutas as MaybeArray<{ nombre: string }>
         const usuario = v.usuarios as MaybeArray<{ nombre: string }>
+        const cobro = v.cobros as MaybeArray<{
+          monto: number
+          estado: string
+          formas_pago: MaybeArray<{ nombre: string }>
+        }>
+        const cobroRow = firstOrNull(cobro)
+        const formaPago = firstOrNull(cobroRow?.formas_pago ?? null)
         return {
           id: v.id,
           estado: v.estado,
           fecha_hora_inicio: v.fecha_hora_inicio ?? null,
           monto_calculado: (v.monto_calculado as number) ?? 0,
+          monto_cobrado: cobroRow?.monto ?? null,
+          estado_cobro: cobroRow?.estado ?? null,
+          forma_pago: formaPago?.nombre ?? null,
           pdvNombre: firstOrNull(pdv)?.nombre_comercial ?? '—',
           vitrinaCodigo: firstOrNull(vitrina)?.codigo ?? '—',
           rutaNombre: firstOrNull(ruta)?.nombre ?? '—',

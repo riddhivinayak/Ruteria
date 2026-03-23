@@ -8,6 +8,7 @@ import { useVisitas } from '@/lib/hooks/useVisitas'
 import type { VisitaAdmin } from '@/lib/hooks/useVisitas'
 import { useRutas } from '@/lib/hooks/useRutas'
 import { useColaboradoras } from '@/lib/hooks/useColaboradoras'
+import { getBusinessDate } from '@/lib/dates'
 
 // Configuración visual de estados
 const ESTADO_CONFIG: Record<string, { label: string; className: string }> = {
@@ -26,10 +27,10 @@ const COLUMNAS: Column<VisitaAdmin>[] = [
       const d = new Date(row.fecha_hora_inicio)
       return (
         <span className="text-slate-700">
-          {d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+          {d.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
           {' '}
           <span className="text-slate-400 text-xs">
-            {d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+            {d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
           </span>
         </span>
       )
@@ -71,22 +72,58 @@ const COLUMNAS: Column<VisitaAdmin>[] = [
   },
   {
     key: 'monto',
-    header: 'Monto',
+    header: 'Calculado',
     className: 'text-right',
     render: (row) => (
       <span className="text-slate-700 font-medium tabular-nums">
-        {row.monto_calculado.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}
+        {row.monto_calculado.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}
       </span>
     ),
   },
+  {
+    key: 'cobrado',
+    header: 'Cobrado',
+    className: 'text-right',
+    render: (row) => (
+      <div className="flex flex-col items-end">
+        <span className="text-slate-700 font-medium tabular-nums">
+          {row.monto_cobrado === null
+            ? '—'
+            : row.monto_cobrado.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}
+        </span>
+        {row.forma_pago && (
+          <span className="text-[11px] text-slate-400">{row.forma_pago}</span>
+        )}
+      </div>
+    ),
+  },
+  {
+    key: 'discrepancia',
+    header: 'Cobro',
+    render: (row) => {
+      if (!row.estado_cobro) {
+        return <span className="text-slate-300">—</span>
+      }
+
+      if (row.estado_cobro === 'discrepancia') {
+        return (
+          <Badge className="bg-amber-100 text-amber-700 border-amber-200">
+            Discrepancia
+          </Badge>
+        )
+      }
+
+      return (
+        <Badge className="bg-slate-100 text-slate-600 border-slate-200">
+          {row.estado_cobro}
+        </Badge>
+      )
+    },
+  },
 ]
 
-function toDateInput(d: Date): string {
-  return d.toISOString().split('T')[0]
-}
-
 export function VisitasTable() {
-  const hoy = toDateInput(new Date())
+  const hoy = getBusinessDate()
 
   const [fechaDesde, setFechaDesde] = useState(hoy)
   const [fechaHasta, setFechaHasta] = useState(hoy)

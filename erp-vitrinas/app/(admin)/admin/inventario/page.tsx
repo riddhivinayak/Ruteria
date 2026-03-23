@@ -3,22 +3,24 @@
 import { useState, useMemo } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DataTable, type Column } from '@/components/admin/DataTable'
 import { SearchInput } from '@/components/admin/SearchInput'
 import { InventarioCentralSheet } from '@/components/admin/InventarioCentralSheet'
+import { InventarioColaboradorasTab } from '@/components/admin/InventarioColaboradorasTab'
 import { useInventarioCentral, type InventarioCentralItem } from '@/lib/hooks/useInventarioCentral'
 
-// Formateador de moneda MXN
-function formatMXN(value: number): string {
-  return new Intl.NumberFormat('es-MX', {
+// Formateador de moneda COP
+function formatCOP(value: number): string {
+  return new Intl.NumberFormat('es-CO', {
     style: 'currency',
-    currency: 'MXN',
+    currency: 'COP',
   }).format(value)
 }
 
 // Formateador de fecha corta
 function formatFecha(iso: string): string {
-  return new Intl.DateTimeFormat('es-MX', {
+  return new Intl.DateTimeFormat('es-CO', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -28,6 +30,7 @@ function formatFecha(iso: string): string {
 export default function InventarioCentralPage() {
   const { data: items = [], isLoading } = useInventarioCentral()
 
+  const [activeTab, setActiveTab] = useState('central')
   const [search, setSearch] = useState('')
   const [filterCategoria, setFilterCategoria] = useState('')
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -78,7 +81,7 @@ export default function InventarioCentralPage() {
       header: 'Costo unitario',
       render: (item) => {
         const costo = item.costo_promedio ?? item.productos?.costo_compra ?? 0
-        return formatMXN(Number(costo))
+        return formatCOP(Number(costo))
       },
       className: 'text-right',
     },
@@ -86,7 +89,7 @@ export default function InventarioCentralPage() {
       key: 'valor_total',
       header: 'Valor total',
       render: (item) => (
-        <span className="font-medium">{formatMXN(item.valor_total)}</span>
+        <span className="font-medium">{formatCOP(item.valor_total)}</span>
       ),
       className: 'text-right',
     },
@@ -111,44 +114,63 @@ export default function InventarioCentralPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-800">Inventario Central</h1>
-          <p className="text-sm text-slate-500 mt-1">{items.length} productos en bodega</p>
+          <h1 className="text-2xl font-semibold text-slate-800">Inventario</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {activeTab === 'central'
+              ? `${items.length} productos en bodega`
+              : 'Stock asignado a colaboradoras de campo'}
+          </p>
         </div>
-        <Button
-          className="bg-[#6366f1] hover:bg-indigo-500"
-          onClick={() => setSheetOpen(true)}
-        >
-          <Plus size={16} className="mr-1.5" /> Registrar entrada
-        </Button>
+        {activeTab === 'central' && (
+          <Button
+            className="bg-[#6366f1] hover:bg-indigo-500"
+            onClick={() => setSheetOpen(true)}
+          >
+            <Plus size={16} className="mr-1.5" /> Registrar entrada
+          </Button>
+        )}
       </div>
 
-      <div className="flex gap-3 mb-4">
-        <SearchInput
-          value={search}
-          onChange={setSearch}
-          placeholder="Buscar por nombre o código..."
-          className="max-w-xs"
-        />
-        <select
-          value={filterCategoria}
-          onChange={(e) => setFilterCategoria(e.target.value)}
-          className="border border-slate-200 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="">Todas las categorías</option>
-          {categoriasEnInventario.map((nombre) => (
-            <option key={nombre} value={nombre}>
-              {nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="central">Central</TabsTrigger>
+          <TabsTrigger value="colaboradoras">Colaboradoras</TabsTrigger>
+        </TabsList>
 
-      <DataTable
-        columns={columns}
-        data={filtered}
-        isLoading={isLoading}
-        getRowKey={(item) => item.id}
-      />
+        <TabsContent value="central">
+          <div className="flex gap-3 mb-4">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Buscar por nombre o código..."
+              className="max-w-xs"
+            />
+            <select
+              value={filterCategoria}
+              onChange={(e) => setFilterCategoria(e.target.value)}
+              className="border border-slate-200 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Todas las categorías</option>
+              {categoriasEnInventario.map((nombre) => (
+                <option key={nombre} value={nombre}>
+                  {nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <DataTable
+            columns={columns}
+            data={filtered}
+            isLoading={isLoading}
+            getRowKey={(item) => item.id}
+          />
+        </TabsContent>
+
+        <TabsContent value="colaboradoras">
+          <InventarioColaboradorasTab />
+        </TabsContent>
+      </Tabs>
 
       <InventarioCentralSheet open={sheetOpen} onOpenChange={setSheetOpen} />
     </div>

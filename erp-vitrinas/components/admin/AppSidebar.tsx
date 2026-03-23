@@ -13,6 +13,7 @@ import {
   Warehouse,
   Map,
   ClipboardList,
+  Settings2,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { logoutAction } from '@/app/actions/auth'
@@ -25,15 +26,31 @@ interface NavItem {
   adminOnly?: boolean
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/admin/productos', icon: Package, label: 'Productos' },
-  { href: '/admin/puntos-de-venta', icon: Store, label: 'Puntos de Venta' },
-  { href: '/admin/vitrinas', icon: Monitor, label: 'Vitrinas' },
-  { href: '/admin/inventario', icon: Warehouse, label: 'Inventario' },
-  { href: '/admin/rutas', icon: Map, label: 'Rutas' },
-  { href: '/admin/visitas', icon: ClipboardList, label: 'Visitas' },
-  { href: '/admin/usuarios', icon: Users, label: 'Usuarios', adminOnly: true },
+interface NavSection {
+  id: string
+  items: NavItem[]
+}
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    id: 'core',
+    items: [
+      { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+      { href: '/admin/productos', icon: Package, label: 'Productos' },
+      { href: '/admin/puntos-de-venta', icon: Store, label: 'Puntos de Venta' },
+      { href: '/admin/vitrinas', icon: Monitor, label: 'Vitrinas' },
+      { href: '/admin/inventario', icon: Warehouse, label: 'Inventario' },
+      { href: '/admin/rutas', icon: Map, label: 'Rutas' },
+      { href: '/admin/visitas', icon: ClipboardList, label: 'Visitas' },
+      { href: '/admin/usuarios', icon: Users, label: 'Usuarios', adminOnly: true },
+    ],
+  },
+  {
+    id: 'config',
+    items: [
+      { href: '/admin/formas-pago', icon: Settings2, label: 'Formas de pago', adminOnly: true },
+    ],
+  },
 ]
 
 interface AppSidebarProps {
@@ -43,33 +60,44 @@ interface AppSidebarProps {
 export function AppSidebar({ rol }: AppSidebarProps) {
   const pathname = usePathname()
 
-  const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || rol === 'admin')
-
   return (
     <aside className="flex flex-col w-14 min-h-screen bg-[#1e293b] py-4 shrink-0">
-      <nav className="flex flex-col items-center gap-2 flex-1">
-        {visibleItems.map((item) => {
-          const isActive = pathname.startsWith(item.href)
-          const Icon = item.icon
+      <nav className="flex flex-col items-center gap-3 flex-1">
+        {NAV_SECTIONS.map((section, sectionIndex) => {
+          const items = section.items.filter((item) => !item.adminOnly || rol === 'admin')
+
+          if (items.length === 0) return null
+
           return (
-            <Tooltip key={item.href} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Link
-                  href={item.href}
-                  aria-label={item.label}
-                  className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-[#6366f1] text-white'
-                      : 'text-slate-400 hover:bg-slate-700 hover:text-slate-100'
-                  }`}
-                >
-                  <Icon size={18} />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="text-xs">
-                {item.label}
-              </TooltipContent>
-            </Tooltip>
+            <div key={section.id} className="flex flex-col items-center gap-2 w-full">
+              {sectionIndex > 0 && <div className="w-8 h-px bg-slate-700" aria-hidden />}
+
+              {items.map((item) => {
+                const isActive = pathname.startsWith(item.href)
+                const Icon = item.icon
+
+                return (
+                  <Tooltip key={item.href} delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={item.href}
+                        aria-label={item.label}
+                        className={`flex items-center justify-center w-9 h-9 rounded-lg transition-colors ${
+                          isActive
+                            ? 'bg-[#6366f1] text-white'
+                            : 'text-slate-400 hover:bg-slate-700 hover:text-slate-100'
+                        }`}
+                      >
+                        <Icon size={18} />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="text-xs">
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </div>
           )
         })}
       </nav>

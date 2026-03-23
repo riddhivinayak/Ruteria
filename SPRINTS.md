@@ -103,18 +103,18 @@ Decisiones técnicas:
 
 ### Sprint 4 — Cierre de Visita: Cobro + Reposición + Fotos
 **Objetivo:** Flujo completo de visita: registrar cobro, reponer y cerrar.
-**Estado general:** `[ ]` pendiente
+**Estado general:** `[x]` completado (2026-03-23)
 **HUs:** HU-20, HU-21, HU-22, HU-23, HU-24
 
 | # | Tarea | HU | Estado | Notas |
 |---|-------|----|--------|-------|
-| S4-01 | Registrar monto cobrado y forma de pago | HU-20 | `[ ]` | |
-| S4-02 | Validación: nota obligatoria si monto_cobrado ≠ monto_calculado → estado `discrepancia` | HU-20 | `[ ]` | |
-| S4-03 | Sugerencia de reposición hasta surtido estándar, ajustable por colaboradora | HU-21 | `[ ]` | |
-| S4-04 | Subida de fotos de vitrina a Supabase Storage (antes/después de reposición) | HU-22 | `[ ]` | |
-| S4-05 | Cierre de visita: actualizar inventario_vitrina + inventario_central + movimientos | HU-23 | `[ ]` | |
-| S4-06 | Cierre de visita: generar cobro + marcar visita como `completada` | HU-23 | `[ ]` | |
-| S4-07 | Marcar visita como `no_realizada` con motivo | HU-24 | `[ ]` | |
+| S4-01 | Registrar monto cobrado y forma de pago | HU-20 | `[x]` | `formas_pago` + flujo `VisitaCobroView` |
+| S4-02 | Validación: nota obligatoria si monto_cobrado ≠ monto_calculado → estado `discrepancia` | HU-20 | `[x]` | Validación cliente + RPC `cerrar_visita()` |
+| S4-03 | Sugerencia de reposición hasta surtido estándar, ajustable por colaboradora | HU-21 | `[x]` | `VisitaReposicionView` con stock de colaboradora |
+| S4-04 | Subida de fotos de vitrina a Supabase Storage (antes/después de reposición) | HU-22 | `[x]` | Fotos post-reposición en bucket `fotos-visita` |
+| S4-05 | Cierre de visita: actualizar inventario_vitrina + inventario_central + movimientos | HU-23 | `[x]` | RPC + `inventario_colaboradora` + movimientos inmutables |
+| S4-06 | Cierre de visita: generar cobro + marcar visita como `completada` | HU-23 | `[x]` | Cobro persistido + badge de discrepancia en admin |
+| S4-07 | Marcar visita como `no_realizada` con motivo | HU-24 | `[x]` | Cubierto como regresión de Sprint 3 y validado en e2e |
 
 ---
 
@@ -200,6 +200,7 @@ Decisiones técnicas:
 | 2026-03-21 | Sprint 1 | Bug fix | Route groups (admin)/(campo) no generan prefijo URL. Páginas movidas a subcarpetas admin/ y campo/ dentro del grupo. |
 | 2026-03-21 | Sprint 1 | Bug fix | Selects vacíos en PDV (zona_id, forma_pago_preferida) fallaban validación Zod. Añadido z.preprocess para convertir "" → undefined. |
 | 2026-03-22 | Sprint 2 | Completado | Módulos Vitrinas (listado + detalle tabs), Inventario Central y Rutas con DnD. Dependencias: @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities. |
+| 2026-03-23 | Sprint 4 | Completado | Flujo completo de cierre de visita: cobro, reposición, fotos opcionales y cierre transaccional vía RPC. Admin: formas de pago e inventario de colaboradoras. |
 
 ---
 
@@ -244,3 +245,15 @@ Decisiones técnicas:
 **`inv_anterior = 0`:** Primera visita a una vitrina nueva no tiene row en `inventario_vitrina`. Usar `inventarioMap.get(prod.id) ?? 0`.
 
 **Cron de generación de visitas:** `supabase/config.toml` en CLI local v2.75.0 no soporta `schedule` en `[functions.*]`. Configurar el cron desde el dashboard de Supabase Cloud en producción.
+
+### Decisiones Sprint 4 (relevantes para sprints futuros)
+
+**Numeración real de migraciones:** Sprint 4 no pudo arrancar en `20260013` porque ya existía `20260013_normalize_dias_visita.sql`. Las migraciones nuevas del sprint comienzan en `20260014`.
+
+**Modelo de inventario de campo:** La reposición ya no sale de `inventario_central` directo. El flujo correcto es `central -> colaboradora -> vitrina`, con `inventario_colaboradora` como snapshot denormalizado y `movimientos_inventario` como fuente inmutable.
+
+**Cierre de visita atómico:** El RPC `cerrar_visita()` es la fuente de verdad del cierre. Además de persistir cobro y reposiciones, también registra movimientos `venta` para que el stock de vitrina refleje el conteo antes de sumar reposición.
+
+**Bucket de fotos:** El nombre consistente del bucket en local y RLS es `fotos-visita`. Evitar variantes como `visitas-fotos` o `fotos-visitas` en código nuevo.
+
+**Regresión de Sprint 3:** Con Sprint 4, `guardarConteo` ya no redirige a ruta; ahora avanza a cobro dentro de `/campo/visita/[id]`. Los tests de Sprint 3 deben validar esa transición.

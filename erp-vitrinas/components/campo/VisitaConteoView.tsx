@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { ConteoTable } from '@/components/campo/ConteoTable'
@@ -16,10 +15,10 @@ function recalc(item: ItemConteo, invActual: number | null): ItemConteo {
 interface Props {
   visita: VisitaDetalle
   guardarConteo: UseMutationResult<void, Error, ItemConteo[]>
+  onConteoGuardado: () => void
 }
 
-export function VisitaConteoView({ visita, guardarConteo }: Props) {
-  const router = useRouter()
+export function VisitaConteoView({ visita, guardarConteo, onConteoGuardado }: Props) {
   const [items, setItems] = useState<ItemConteo[]>(visita.items)
 
   function handleChange(productoId: string, invActual: number | null) {
@@ -41,7 +40,7 @@ export function VisitaConteoView({ visita, guardarConteo }: Props) {
     guardarConteo.mutate(items, {
       onSuccess: () => {
         toast.success('Conteo guardado correctamente')
-        router.push('/campo/ruta-del-dia')
+        onConteoGuardado()
       },
       onError: (err) => toast.error(err.message),
     })

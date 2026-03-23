@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
+import { getBusinessDate, getBusinessDayUtcRange } from '../lib/dates'
 
 // Cliente admin para seed (usa service role en local)
 const adminSupabase = createClient(
@@ -69,7 +70,8 @@ test.describe('Sprint 3 — Campo', () => {
     }
 
     // Crear visita planificada para hoy
-    const hoy = new Date().toISOString().split('T')[0]
+    const hoy = getBusinessDate()
+    const { start, end } = getBusinessDayUtcRange(hoy)
     const { data: existente } = await adminSupabase
       .from('visitas')
       .select('id')
@@ -77,7 +79,8 @@ test.describe('Sprint 3 — Campo', () => {
       .eq('vitrina_id', vitrina!.id)
       .eq('colaboradora_id', colaboradoraId)
       .eq('estado', 'planificada')
-      .gte('created_at', `${hoy}T00:00:00.000Z`)
+      .gte('created_at', start)
+      .lt('created_at', end)
       .maybeSingle()
 
     if (existente) {
@@ -134,12 +137,15 @@ test.describe('Sprint 3 — Campo', () => {
     await expect(page.locator('th', { hasText: 'Ant' })).toBeVisible()
   })
 
-  // Test 4 + 5: Ingreso de conteos y guardar
-  test('ingresa conteos, ve cálculo live y guarda correctamente', async ({ page }) => {
+  // Test 4 + 5: Ingreso de conteos y transición a cobro
+  test('ingresa conteos, ve cálculo live y avanza al paso de cobro', async ({ page }) => {
     await adminSupabase
       .from('visitas')
       .update({ estado: 'en_ejecucion', fecha_hora_inicio: new Date().toISOString() })
       .eq('id', visitaId)
+
+    await adminSupabase.from('detalle_visita').delete().eq('visita_id', visitaId)
+    await adminSupabase.from('cobros').delete().eq('visita_id', visitaId)
 
     await loginColaboradora(page)
     await page.goto(`/campo/visita/${visitaId}`)
@@ -156,8 +162,8 @@ test.describe('Sprint 3 — Campo', () => {
     await expect(btnGuardar).toBeEnabled()
     await btnGuardar.click()
 
-    await page.waitForURL('/campo/ruta-del-dia')
-    await expect(page.getByText('Tienda Demo Norte').first()).toBeVisible()
+    await expect(page.getByText(/monto calculado/i)).toBeVisible()
+    await expect(page.getByText(/continuar a reposicion/i)).toBeVisible()
   })
 
   // Test 6: Marcar no realizada
@@ -190,7 +196,7 @@ test.describe('Sprint 3 — Admin', () => {
   test('admin ve página de visitas con filtro de fecha por defecto', async ({ page }) => {
     await page.goto('/admin/visitas')
     await expect(page.getByRole('heading', { name: 'Visitas' })).toBeVisible()
-    const hoy = new Date().toISOString().split('T')[0]
+    const hoy = getBusinessDate()
     await expect(page.locator('input[type="date"]').first()).toHaveValue(hoy)
   })
 

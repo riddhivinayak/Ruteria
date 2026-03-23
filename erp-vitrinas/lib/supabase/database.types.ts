@@ -78,7 +78,7 @@ export type Database = {
           created_by: string | null
           estado: string
           fecha: string
-          forma_pago: string
+          forma_pago_id: string
           id: string
           monto: number
           notas: string | null
@@ -90,7 +90,7 @@ export type Database = {
           created_by?: string | null
           estado?: string
           fecha?: string
-          forma_pago: string
+          forma_pago_id: string
           id?: string
           monto: number
           notas?: string | null
@@ -102,7 +102,7 @@ export type Database = {
           created_by?: string | null
           estado?: string
           fecha?: string
-          forma_pago?: string
+          forma_pago_id?: string
           id?: string
           monto?: number
           notas?: string | null
@@ -115,6 +115,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cobros_forma_pago_id_fkey"
+            columns: ["forma_pago_id"]
+            isOneToOne: false
+            referencedRelation: "formas_pago"
             referencedColumns: ["id"]
           },
           {
@@ -304,6 +311,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      formas_pago: {
+        Row: {
+          activo: boolean
+          created_at: string
+          id: string
+          nombre: string
+          updated_at: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre: string
+          updated_at?: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          id?: string
+          nombre?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       fotos_visita: {
         Row: {
@@ -535,6 +566,42 @@ export type Database = {
             foreignKeyName: "inventario_central_producto_id_fkey"
             columns: ["producto_id"]
             isOneToOne: true
+            referencedRelation: "productos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventario_colaboradora: {
+        Row: {
+          cantidad_actual: number
+          colaboradora_id: string
+          producto_id: string
+          updated_at: string
+        }
+        Insert: {
+          cantidad_actual?: number
+          colaboradora_id: string
+          producto_id: string
+          updated_at?: string
+        }
+        Update: {
+          cantidad_actual?: number
+          colaboradora_id?: string
+          producto_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventario_colaboradora_colaboradora_id_fkey"
+            columns: ["colaboradora_id"]
+            isOneToOne: false
+            referencedRelation: "usuarios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventario_colaboradora_producto_id_fkey"
+            columns: ["producto_id"]
+            isOneToOne: false
             referencedRelation: "productos"
             referencedColumns: ["id"]
           },
@@ -1236,6 +1303,10 @@ export type Database = {
     }
     Functions: {
       calcular_monto_visita: { Args: { p_visita_id: string }; Returns: number }
+      cerrar_visita: {
+        Args: { p_cobro: Json; p_reposiciones?: Json; p_visita_id: string }
+        Returns: undefined
+      }
       get_kpi_ventas: {
         Args: { fecha_fin: string; fecha_inicio: string }
         Returns: {
@@ -1383,3 +1454,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
