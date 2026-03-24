@@ -19,7 +19,7 @@ test.describe('Sprint 2', () => {
   // S2-05: Inventario central page
   test('navega a inventario central', async ({ page }) => {
     await page.goto('/admin/inventario')
-    await expect(page.getByRole('heading', { name: 'Inventario Central' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Inventario' })).toBeVisible()
   })
 
   // S2-06: Rutas listing

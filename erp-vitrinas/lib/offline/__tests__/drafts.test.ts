@@ -24,6 +24,7 @@ function buildVisitaDetalle(): VisitaDetalle {
         productoId: 'prod-1',
         nombre: 'Audifono',
         precioUnitario: 15000,
+        productoActivo: true,
         invAnterior: 10,
         invActual: null,
         unidadesVendidas: 0,

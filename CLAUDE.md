@@ -140,6 +140,18 @@ No direct Supabase/fetch calls in components. All data logic lives in hooks (`li
 - HTML selects with an empty option (`value=""`) need `z.preprocess((v) => v === '' ? undefined : v, ...)` before the field validator — already applied in PDV, apply to all new optional select fields
 - Sheet/dialog reset pattern: `useEffect([open, entity, reset])` with `if (!open) return` guard
 
+### Hooks — required order
+Always call `useQueryClient()` **before** `useQuery()` or `useMutation()` inside the hook body. React Query v5 throws if the order is reversed.
+
+### Params in client components (Next.js 15/16)
+`params` is a Promise in Next.js 15+. Unwrap with `use(params)` in client components:
+```ts
+const { id } = use(params)
+```
+
+### Multi-step mutations — rollback compensatorio
+PostgREST has no client-side transactions. When a mutation requires two sequential writes (e.g. delete + re-insert for `rutas_pdv`), if the second step fails, manually revert the first step. Pattern already applied in `useRutas`.
+
 ### Inventory model
 Inventory movements (`movimientos_inventario`) are **immutable** — never deleted, only new records created. Current stock is denormalized into `inventario_vitrina` and `inventario_central` via PostgreSQL triggers. The core visit calculation: `unidades_vendidas = inv_anterior - inv_actual`.
 
@@ -173,14 +185,15 @@ The `(campo)` view will use a service worker with IndexedDB to cache the day's r
 - **Files:** Components → `PascalCase.tsx`; utils → `camelCase.ts`.
 - **Comments:** Business logic in Spanish; infrastructure/technical code in English.
 - Supabase types are generated — always regenerate after schema changes.
-- Playwright selectors: use `input[name="..."]` (not by label — Field components lack `htmlFor`).
+- Playwright selectors: use `input[name="..."]` for most forms (Field components lack `htmlFor`). Exception: the login form has no `name` attributes — use `page.getByLabel(/correo/i)` and `page.getByLabel(/contraseña/i)` there.
+- Playwright logout: use `page.evaluate(() => form.requestSubmit())` to avoid Next.js portal overlay blocking the button click.
 
 ## Git Workflow
 
-- `main` = production; `develop` = integration branch (create on remote before Sprint 2).
-- Feature branches from `develop`: `feature/HU-XX-descripcion-corta`
+- `main` = production (Sprint 1 + Sprint 2 merged). Sprint 3 branch: `feature/sprint3-visitas-campo`.
+- Feature branches from `main`: `feature/sprint3-...` (no `develop` branch exists in the remote yet — create one before Sprint 3 if needed, or branch directly from `main`).
 - Commit format: `feat:`, `fix:`, `chore:`, `docs:`, `test:` + Spanish description.
-- No direct push to `main` or `develop`. PRs require 1 reviewer + passing CI.
+- No direct push to `main`. PRs require 1 reviewer + passing CI.
 
 ## Key Business Rules
 
@@ -190,6 +203,21 @@ The `(campo)` view will use a service worker with IndexedDB to cache the day's r
 4. An incident cannot be closed without a registered resolution.
 5. Inactive products must not appear in restock options.
 6. First visit to a new vitrina uses `inv_anterior = 0` for all products.
+
+## Sprint 3 Scope (current sprint)
+
+**HUs:** HU-14 to HU-19. Covers the field worker visit flow.
+
+| Task | Description |
+|------|-------------|
+| S3-01 | Mobile view: ruta del día with PDVs in order and status (pending/completed) |
+| S3-02 | Admin dashboard: planned vs completed visits per route |
+| S3-03 | Temporary route reassignment to another colaboradora (with reason + date) |
+| S3-04 | Start visit: record start time, show `inv_anterior` per product |
+| S3-05 | Enter current inventory → automatic `unidades_vendidas` calculation |
+| S3-06 | Show total amount to collect, broken down by product |
+
+All S3-01/04/05/06 are in the `(campo)` group (mobile-first). S3-02/03 are in `(admin)`.
 
 ## Key SQL Triggers & Functions
 

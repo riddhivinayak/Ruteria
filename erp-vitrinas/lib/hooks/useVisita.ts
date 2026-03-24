@@ -28,6 +28,7 @@ export type ItemConteo = {
   productoId: string
   nombre: string
   precioUnitario: number
+  productoActivo: boolean         // false = producto inactivo; no debe aparecer en reposición
   invAnterior: number
   invActual: number | null        // null = no ingresado aún
   unidadesVendidas: number        // calculado live: max(invAnterior - invActual, 0)
@@ -77,7 +78,7 @@ function calcItem(
   precio: number,
   invAnterior: number,
   invActual: number | null
-): Omit<ItemConteo, 'cantidadObjetivo' | 'stockColaboradora'> {
+): Omit<ItemConteo, 'cantidadObjetivo' | 'stockColaboradora' | 'productoActivo'> {
   const vendidas = invActual !== null ? Math.max(invAnterior - invActual, 0) : 0
   return {
     productoId,
@@ -152,7 +153,7 @@ export function useVisita(id: string) {
         const [surtidoRes, inventarioRes, detalleRes, inventarioColaboradoraRes] = await Promise.all([
           supabase
             .from('surtido_estandar')
-            .select('producto_id, cantidad_objetivo, productos(id, nombre, precio_venta_comercio)')
+            .select('producto_id, cantidad_objetivo, productos(id, nombre, precio_venta_comercio, estado)')
             .eq('vitrina_id', vitrinaId),
           supabase
             .from('inventario_vitrina')
@@ -181,7 +182,7 @@ export function useVisita(id: string) {
           (inventarioColaboradoraRes.data ?? []).map((item) => [item.producto_id, item.cantidad_actual])
         )
 
-        type ProdRaw = { id: string; nombre: string; precio_venta_comercio: number }
+        type ProdRaw = { id: string; nombre: string; precio_venta_comercio: number; estado: string }
 
         const items: ItemConteo[] = (surtidoRes.data ?? []).map((se) => {
           const prod = firstOrNull(
@@ -195,6 +196,7 @@ export function useVisita(id: string) {
 
           return {
             ...calcItem(prod.id, prod.nombre, prod.precio_venta_comercio, invAnterior, invActual),
+            productoActivo: prod.estado === 'activo',
             cantidadObjetivo: se.cantidad_objetivo ?? 0,
             stockColaboradora: inventarioColaboradoraMap.get(prod.id) ?? 0,
           }

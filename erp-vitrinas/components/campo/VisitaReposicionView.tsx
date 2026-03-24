@@ -44,7 +44,9 @@ const inputCls =
   'w-20 rounded border border-slate-300 px-2 py-1 text-center text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-200'
 
 export function VisitaReposicionView({ items, initialValue, onContinuar }: Props) {
-  const [rows, setRows] = useState<ReposicionDraft[]>(initialValue?.length ? initialValue : buildInitialRows(items))
+  // Regla de negocio: productos inactivos no aparecen en opciones de reposición
+  const itemsActivos = items.filter((item) => item.productoActivo)
+  const [rows, setRows] = useState<ReposicionDraft[]>(initialValue?.length ? initialValue : buildInitialRows(itemsActivos))
   const [error, setError] = useState('')
 
   function updateCantidad(productoId: string, rawValue: string) {

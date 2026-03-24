@@ -235,7 +235,12 @@ export function useIncidencias(filtros: FiltrosIncidencias = {}) {
         syncStatus: item.syncStatus,
       }))
 
-      return [...pendingItems, ...remoteItems]
+      // Deduplicar: si un item pendiente ya fue sincronizado al servidor (mismo UUID),
+      // el remoto tiene precedencia para evitar conteo doble durante el proceso de sync.
+      const remoteIds = new Set(remoteItems.map((i) => i.id))
+      const pendingNoSincronizados = pendingItems.filter((i) => !remoteIds.has(i.id))
+
+      return [...pendingNoSincronizados, ...remoteItems]
     },
   })
 }
