@@ -1,6 +1,6 @@
 # Deployment Runbook — Fase 2
 
-Guía mínima para promover `powERP` a `staging` y `production` con rollback simple.
+Guía mínima para promover `ruteria` a `staging` y `production` con rollback simple.
 
 ## 1. Prerrequisitos
 
@@ -29,7 +29,7 @@ Configurar además en operación:
 
 1. Confirmar que CI está en verde en la rama candidata.
 2. Verificar localmente:
-   - `cd powERP`
+   - `cd ruteria`
    - `npm run ci:checks`
    - `npm run audit:prod`
 3. Desplegar la rama candidata a `staging`.

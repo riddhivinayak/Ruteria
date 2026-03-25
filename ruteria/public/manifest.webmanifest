@@ -1,7 +1,7 @@
 {
-  "name": "Powerp ERP Vitrinas",
-  "short_name": "Powerp",
-  "description": "ERP de vitrinas en consignacion con soporte movil para campo",
+  "name": "Ruteria Field Service Management",
+  "short_name": "Ruteria",
+  "description": "FSM para gestion de rutas, visitas y operacion en campo",
   "start_url": "/campo/ruta-del-dia",
   "display": "standalone",
   "background_color": "#f8fafc",

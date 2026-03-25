@@ -1,12 +1,12 @@
 # Release Candidate Checklist — Fase 2
 
-Checklist operativa para aprobar una release comercial de `powERP` hasta Fase 2.
+Checklist operativa para aprobar una release comercial de `ruteria` hasta Fase 2.
 
 Runbook complementario: `DEPLOYMENT_RUNBOOK.md`.
 
 ## 1. Infraestructura local y CI
 
-- [ ] `cd powERP`
+- [ ] `cd ruteria`
 - [ ] `npm ci`
 - [ ] `supabase start`
 - [ ] `./scripts/export-supabase-env.sh dotenv > .env.local`
@@ -31,7 +31,7 @@ Runbook complementario: `DEPLOYMENT_RUNBOOK.md`.
 
 ## 3. Base de datos y fixtures
 
-- [ ] Sin migraciones pendientes en `powERP/supabase/migrations/`
+- [ ] Sin migraciones pendientes en `ruteria/supabase/migrations/`
 - [ ] `database.types.ts` alineado con el schema real
 - [ ] Seed SQL y seed Auth reproducibles desde runner limpio
 - [ ] Usuarios semilla disponibles: `admin`, `supervisor`, `analista`, `compras`, `colaboradora`

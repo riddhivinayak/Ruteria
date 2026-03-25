@@ -1,6 +1,6 @@
 'use client'
 
-const DB_NAME = 'powerp-offline'
+const DB_NAME = 'ruteria-offline'
 const DB_VERSION = 4
 const OFFLINE_DATA_CHANGED_EVENT = 'offline-data-changed'
 

@@ -51,6 +51,7 @@ async function resetBaseData() {
     await adminSupabase.from('sync_operaciones_visita').delete().in('visita_id', visitaIds)
     await adminSupabase.from('movimientos_inventario').delete().in('referencia_id', visitaIds)
     await adminSupabase.from('cobros').delete().in('visita_id', visitaIds)
+    await adminSupabase.from('fotos_visita').delete().in('visita_id', visitaIds)
     await adminSupabase.from('detalle_visita').delete().in('visita_id', visitaIds)
   }
 
@@ -103,6 +104,12 @@ async function createVisitaEnEjecucion() {
     inv_actual: 8,
     precio_unitario: 15000,
     unidades_repuestas: 0,
+  })
+
+  await adminSupabase.from('fotos_visita').insert({
+    visita_id: visita.id,
+    url: `https://example.com/fotos/${visita.id}-final.png`,
+    tipo: 'despues',
   })
 
   return visita.id

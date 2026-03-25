@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Powerp — ERP Vitrinas',
-  description: 'Sistema ERP-CRM para gestión de vitrinas en consignación',
+  title: 'Ruteria - Field Service Management',
+  description: 'Sistema FSM para gestion de rutas, visitas y operacion en campo',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Powerp',
+    title: 'Ruteria',
   },
 }
 

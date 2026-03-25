@@ -1,4 +1,4 @@
-const CACHE_NAME = 'powerp-app-v1'
+const CACHE_NAME = 'ruteria-app-v1'
 const APP_SHELL = [
   '/manifest.webmanifest',
   '/icons/icon-192.svg',

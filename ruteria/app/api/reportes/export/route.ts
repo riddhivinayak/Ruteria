@@ -132,7 +132,7 @@ async function createWorkbookBuffer<TRow>(
   columns: ColumnDef<TRow>[]
 ) {
   const workbook = new ExcelJS.Workbook()
-  workbook.creator = 'powERP'
+  workbook.creator = 'ruteria'
   workbook.created = new Date()
 
   const worksheet = workbook.addWorksheet(sheetName)

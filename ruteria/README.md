@@ -1,6 +1,6 @@
-# powERP
+# ruteria
 
-Main application workspace for [powERP](../README.md).
+Main application workspace for [ruteria](../README.md).
 
 ## What is here
 

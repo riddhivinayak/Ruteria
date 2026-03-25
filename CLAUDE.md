@@ -20,10 +20,10 @@ ERP-CRM system for managing electronic accessories in consignment display cases 
 
 ## Working Directory
 
-All commands must be run from `powERP/` (the Next.js app root):
+All commands must be run from `ruteria/` (the Next.js app root):
 
 ```bash
-cd powERP
+cd ruteria
 ```
 
 ## Commands
@@ -66,7 +66,7 @@ npm run seed:auth         # crea admin@erp.local y colaboradora@erp.local vía A
 - API: `http://127.0.0.1:54321`
 - Studio: `http://127.0.0.1:54323`
 - DB port: `54322`
-- Credentials in `powERP/.env.local`
+- Credentials in `ruteria/.env.local`
 
 ### Setup post db reset
 
@@ -92,10 +92,10 @@ STORAGE_BUCKET_FOTOS           # Supabase Storage bucket name for photos
 
 ## Project Structure
 
-The repo root contains planning docs (`ERP_CRM_Plan_v2.md`, `SPRINTS.md`, `docs/`). All application code lives under `powERP/`:
+The repo root contains planning docs (`ERP_CRM_Plan_v2.md`, `SPRINTS.md`, `docs/`). All application code lives under `ruteria/`:
 
 ```
-powERP/
+ruteria/
   app/
     (admin)/admin/   # Admin panel routes → served at /admin/*
     (campo)/campo/   # Field worker routes → served at /campo/*

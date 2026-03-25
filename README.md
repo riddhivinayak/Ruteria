@@ -1,6 +1,6 @@
 <div align="center">
 
-# powERP
+# ruteria
 
 **A field operations ERP/CRM for consignment retail networks**
 
@@ -16,7 +16,7 @@ Built to manage the full visit workflow across **200+ retail locations**: routes
 
 ## Overview
 
-`powERP` is a production-style internal platform for a consignment business operating physical display cases inside third-party stores.
+`ruteria` is a production-style internal platform for a consignment business operating physical display cases inside third-party stores.
 
 It replaces manual coordination with a structured system for:
 
@@ -73,8 +73,8 @@ Release hardening included:
 ## Local Setup
 
 ```bash
-git clone https://github.com/scldrn/powERP.git
-cd powERP/powERP
+git clone https://github.com/scldrn/ruteria.git
+cd ruteria/ruteria
 
 npm install
 npm run db:start
@@ -102,7 +102,7 @@ Release gate details live in `RELEASE_CANDIDATE_CHECKLIST.md`.
 
 ## Repository
 
-- `powERP/`: main application
+- `ruteria/`: main application
 - `docs/`: sprint and implementation docs
 - `SPRINTS.md`: delivery history
 - `ERP_CRM_Plan_v2.md`: master product plan aligned to the shipped scope

@@ -231,7 +231,7 @@ Decisiones técnicas:
 
 **Estructura de rutas:** Los route groups `(admin)` y `(campo)` son solo organizativos — NO añaden segmento URL. Las páginas viven en subcarpetas `admin/` y `campo/` dentro del grupo para generar `/admin/*` y `/campo/*`. Respetar este patrón en todos los sprints.
 
-**Roles:** `UserRol` y `ROLES` exportados desde `lib/validations/usuarios.ts`. El middleware lee `user.app_metadata.rol`. Para crear usuarios en Supabase local usar Docker: `docker exec -i supabase_db_powERP psql -U postgres`.
+**Roles:** `UserRol` y `ROLES` exportados desde `lib/validations/usuarios.ts`. El middleware lee `user.app_metadata.rol`. Para crear usuarios en Supabase local usar Docker: `docker exec -i supabase_db_ruteria psql -U postgres`.
 
 **Formularios:** Selects HTML con opción vacía (`value=""`) necesitan `z.preprocess((v) => v === '' ? undefined : v, ...)` antes del validador Zod. Aplicar en todos los schemas nuevos que tengan campos opcionales con select.
 

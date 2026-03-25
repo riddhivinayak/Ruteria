@@ -158,7 +158,7 @@ La vista de campo se implementará como PWA con service worker para:
 ### 4.1 Repositorio
 
 ```
-powERP/
+ruteria/
 ├── app/                          # Next.js App Router
 │   ├── (admin)/                  # Rutas del panel administrador
 │   │   ├── dashboard/
