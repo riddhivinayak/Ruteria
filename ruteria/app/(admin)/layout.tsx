@@ -5,6 +5,8 @@ import { AppShell } from '@/components/admin/AppShell'
 import { ROLES } from '@/lib/validations/usuarios'
 import type { UserRol } from '@/lib/validations/usuarios'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient()
 

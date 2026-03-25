@@ -7,7 +7,14 @@ import { useOfflineSync } from '@/lib/hooks/useOfflineSync'
 import { setOfflineSyncActivity } from '@/lib/offline/network'
 import { processOfflineSyncQueue } from '@/lib/offline/sync'
 
+const HAS_SUPABASE_ENV =
+  Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
 export function OfflineSyncBootstrap() {
+  if (!HAS_SUPABASE_ENV) {
+    return null
+  }
+
   const supabase = createClient()
   const queryClient = useQueryClient()
   const { isOnline } = useOfflineSync()
