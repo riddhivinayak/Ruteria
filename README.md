@@ -74,7 +74,7 @@ Release hardening included:
 
 ```bash
 git clone https://github.com/scldrn/powERP.git
-cd powERP/erp-vitrinas
+cd powERP/powERP
 
 npm install
 npm run db:start
@@ -102,7 +102,7 @@ Release gate details live in `RELEASE_CANDIDATE_CHECKLIST.md`.
 
 ## Repository
 
-- `erp-vitrinas/`: main application
+- `powERP/`: main application
 - `docs/`: sprint and implementation docs
 - `SPRINTS.md`: delivery history
 - `ERP_CRM_Plan_v2.md`: master product plan aligned to the shipped scope

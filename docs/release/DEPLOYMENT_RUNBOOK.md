@@ -29,7 +29,7 @@ Configurar además en operación:
 
 1. Confirmar que CI está en verde en la rama candidata.
 2. Verificar localmente:
-   - `cd erp-vitrinas`
+   - `cd powERP`
    - `npm run ci:checks`
    - `npm run audit:prod`
 3. Desplegar la rama candidata a `staging`.

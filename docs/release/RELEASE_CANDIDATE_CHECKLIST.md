@@ -6,7 +6,7 @@ Runbook complementario: `DEPLOYMENT_RUNBOOK.md`.
 
 ## 1. Infraestructura local y CI
 
-- [ ] `cd erp-vitrinas`
+- [ ] `cd powERP`
 - [ ] `npm ci`
 - [ ] `supabase start`
 - [ ] `./scripts/export-supabase-env.sh dotenv > .env.local`
@@ -31,7 +31,7 @@ Runbook complementario: `DEPLOYMENT_RUNBOOK.md`.
 
 ## 3. Base de datos y fixtures
 
-- [ ] Sin migraciones pendientes en `erp-vitrinas/supabase/migrations/`
+- [ ] Sin migraciones pendientes en `powERP/supabase/migrations/`
 - [ ] `database.types.ts` alineado con el schema real
 - [ ] Seed SQL y seed Auth reproducibles desde runner limpio
 - [ ] Usuarios semilla disponibles: `admin`, `supervisor`, `analista`, `compras`, `colaboradora`

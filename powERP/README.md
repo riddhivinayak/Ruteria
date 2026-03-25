@@ -1,4 +1,4 @@
-# erp-vitrinas
+# powERP
 
 Main application workspace for [powERP](../README.md).
 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { config } from 'dotenv'
 import path from 'path'
-config({ path: path.resolve('/Users/sam/Proyects/PowerApp/erp-vitrinas', '.env.local') })
+config({ path: path.resolve('/Users/sam/Proyects/PowerApp/powERP', '.env.local') })
 
 test.use({ viewport: { width: 390, height: 844 } })
 
