@@ -1,5 +1,9 @@
 name: CI
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NEXT_TELEMETRY_DISABLED: 1
+
 on:
   pull_request:
     branches: [main, develop]
@@ -18,8 +22,8 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -33,8 +37,8 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -48,8 +52,8 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -63,8 +67,8 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -79,9 +83,9 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
@@ -91,7 +95,7 @@ jobs:
         run: npm ci
 
       - name: Install Supabase CLI
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v1.6.0
         with:
           version: latest
 
@@ -117,12 +121,13 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
             ruteria/playwright-report
             ruteria/test-results
+          if-no-files-found: ignore
 
   audit:
     runs-on: ubuntu-latest
@@ -130,8 +135,8 @@ jobs:
       run:
         working-directory: ruteria
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: npm
