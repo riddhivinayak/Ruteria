@@ -6,6 +6,7 @@ export type Colaboradora = {
   nombre: string
 }
 
+/** Retorna solo colaboradoras activas — usado en selects de asignación de rutas. */
 export function useColaboradoras() {
   const supabase = createClient()
   return useQuery({
